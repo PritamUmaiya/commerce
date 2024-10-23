@@ -48,6 +48,11 @@ def register(request):
             return render(request, "auctions/register.html", {
                 "message": "Passwords must match."
             })
+        
+        if not username or not email or not password or not confirmation:
+            return render(request, "auctions/register.html", {
+                "message": "All fields are required."
+            })
 
         # Attempt to create new user
         try:
@@ -61,3 +66,12 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+
+def create(request):
+    """Create a new listing"""
+    if request.method == "POST":
+        ...
+
+    else:
+        return render(request, "auctions/create.html")
