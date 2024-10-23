@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -5,6 +6,14 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User
+
+
+class ListingForm(forms.Form):
+    title = forms.CharField(label="Title", widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
+    description = forms.CharField(label="Description", widget=forms.Textarea(attrs={"class": "form-control mb-3", "rows": "2"}))
+    starting_bid = forms.DecimalField(label="Starting Bid", widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
+    image_url = forms.URLField(label="Image URL (Optional)", required=False, widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
+    category = forms.CharField(label="Category (Optional)", required=False, widget=forms.TextInput(attrs={"class": "form-control  mb-3"}))
 
 
 def index(request):
@@ -71,7 +80,28 @@ def register(request):
 def create(request):
     """Create a new listing"""
     if request.method == "POST":
-        ...
+        form = ListingForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            description = form.cleaned_data["description"]
+            starting_bid = form.cleaned_data["starting_bid"]
+            image_url = form.cleaned_data["image_url"]
+            category = form.cleaned_data["category"]
+
+            # Create a new listing
+            listing = Listing(
+                title=title,
+                description=description,
+                starting_bid=starting_bid,
+                image_url=image_url,
+                category=category,
+                user=request.user
+            )
+            listing.save()
+
+
 
     else:
-        return render(request, "auctions/create.html")
+        return render(request, "auctions/create.html", {
+            "form": ListingForm()
+        })
