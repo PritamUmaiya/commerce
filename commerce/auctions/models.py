@@ -21,13 +21,13 @@ class Watchlist(models.Model):
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
 
 
-class Bids(models.Model):
+class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     bid = models.IntegerField()
 
 
-class Comments(models.Model):
+class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     comment = models.CharField(max_length=200)
