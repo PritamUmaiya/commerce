@@ -12,7 +12,7 @@ class ListingForm(forms.Form):
     title = forms.CharField(label="Title", widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
     description = forms.CharField(label="Description", widget=forms.Textarea(attrs={"class": "form-control mb-3", "rows": "2"}))
     starting_bid = forms.DecimalField(label="Starting Bid", widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
-    image = forms.URLField(label="Image URL (Optional)", required=False, widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
+    image_url = forms.URLField(label="Image URL (Optional)", required=False, widget=forms.TextInput(attrs={"class": "form-control mb-3"}))
     category = forms.CharField(label="Category (Optional)", required=False, widget=forms.TextInput(attrs={"class": "form-control  mb-3"}))
 
 
@@ -89,7 +89,7 @@ def create(request):
             title = form.cleaned_data["title"]
             description = form.cleaned_data["description"]
             starting_bid = form.cleaned_data["starting_bid"]
-            image = form.cleaned_data["image"]
+            image_url = form.cleaned_data["image_url"]
             category = form.cleaned_data["category"]
 
             # Create a new listing
@@ -97,7 +97,8 @@ def create(request):
                 title=title,
                 description=description,
                 starting_bid=starting_bid,
-                image=image,
+                current_bid=starting_bid,
+                image_url=image_url,
                 category=category,
                 user=request.user
             )
