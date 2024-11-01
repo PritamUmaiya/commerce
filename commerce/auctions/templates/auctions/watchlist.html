@@ -1,10 +1,10 @@
-{% extends "auctions/layout.html" %}
+{% extends 'auctions/layout.html' %}
 
 {% block body %}
-    <h2 class="text-center mb-3">Active Listings</h2>
+    <h2 class="text-center mb-3">Watchlist</h2>
 
     <div class="container">
-        {% for listing in listings %}
+        {% for listing in watchlist %}
             
             <div class="card mb-3">
                 <div class="row g-0">
@@ -29,11 +29,8 @@
                             </p>
                         </div>
                         <div class="card-footer">
-                            {% if listing.id in watchlist_listings %}
-                                <a href="{% url 'remove_from_watchlist' listing.id %}" class="btn btn-success">Watchlisted</a>
-                            {% else %}
-                                <a href="{% url 'add_to_watchlist' listing.id %}" class="btn btn-secondary">Watchlist</a>
-                            {% endif %}
+                            <a href="{% url 'remove_from_watchlist' listing.id %}" class="btn btn-secondary">Remove</a>
+                            
                             <a href="#" class="btn btn-primary">See details</a>
                         </div>
                     </div>
@@ -41,7 +38,7 @@
             </div>
             
         {% empty %}
-            <p class="text-center">No active listings</p>
+            <p class="text-center">Add listing to watchlist to see them here.</p>
         {% endfor %}
     </div>
 

@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from .models import User, Listing, Watchlist, Bid, Comment
@@ -17,7 +17,16 @@ class ListingForm(forms.Form):
 
 
 def index(request):
-    listings = Listing.objects.all()
+    """Return all the active listings"""
+    listings = Listing.objects.filter(active=True)
+
+    if request.user is not None:
+        watchlist_listings = Watchlist.objects.filter(user=request.user).values_list('listing', flat=True)
+        return render(request, "auctions/index.html", {
+            "listings": listings,
+            "watchlist_listings": watchlist_listings
+        })
+   
     return render(request, "auctions/index.html", {
         "listings": listings
     })
@@ -115,3 +124,51 @@ def create(request):
         return render(request, "auctions/create.html", {
             "form": ListingForm()
         })
+
+
+def watchlist(request):
+    watchlist = Listing.objects.filter(watchlist__user=request.user)
+
+    return render(request, "auctions/watchlist.html", {
+        "watchlist": watchlist
+    })
+
+
+def add_to_watchlist(request, listing_id):
+    """Add a listing to the user's watchlist"""
+    listing = Listing.objects.get(pk=listing_id)
+    user = request.user
+
+    # Check if the listing is already in the user's watchlist
+    if Watchlist.objects.filter(user=user, listing=listing).exists():
+        return HttpResponseRedirect(reverse("index"))
+
+    # Add to the watchlist
+    watchlist = Watchlist(user=user, listing=listing)
+    watchlist.save()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'watchlist' in referer:
+        return redirect(reverse('watchlist'))  # Redirect to the watchlist page
+    else:
+        return redirect(reverse('index'))  # Default redirect to the index page
+
+
+def remove_from_watchlist(request, listing_id):
+    """Remove a listing from the user's watchlist"""
+    listing = Listing.objects.get(pk=listing_id)
+    user = request.user
+
+    # Check if the listing is in the user's watchlist
+    if not Watchlist.objects.filter(user=user, listing=listing).exists():
+        return HttpResponseRedirect(reverse("index"))
+
+    # Remove from the watchlist
+    watchlist = Watchlist.objects.get(user=user, listing=listing)
+    watchlist.delete()
+
+    referer = request.META.get('HTTP_REFERER')
+    if referer and 'watchlist' in referer:
+        return redirect(reverse('watchlist'))  # Redirect to the watchlist page
+    else:
+        return redirect(reverse('index'))  # Default redirect to the index page

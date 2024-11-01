@@ -29,7 +29,7 @@
                     <a href="#" class="nav-link">Categories</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">Watchlist</a>
+                    <a href="{% url 'watchlist' %}" class="nav-link">Watchlist <span class="badge text-bg-primary">{{ user.watchlist.count }}</span></a>
                 </li>
                 <li class="nav-item">
                     <a href="{% url 'create' %}" class="nav-link">Create Listing</a>
