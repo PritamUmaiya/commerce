@@ -9,21 +9,28 @@ class Listing(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
     starting_bid = models.IntegerField()
+    current_price = models.IntegerField()
     image_url = models.CharField(max_length=200, null=True, blank=True)
-    category = models.CharField(max_length=200)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.CharField(max_length=200, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
     created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
 class Bid(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    bid_amount = models.IntegerField()
+    amount = models.IntegerField()
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
     comment = models.CharField(max_length=200)
+
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
+
+
 
 
 
