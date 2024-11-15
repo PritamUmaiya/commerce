@@ -7,7 +7,7 @@ from django.urls import reverse
 
 from .models import User
 
-CATEGORIES = ["Fashion", "Toys", "Electronics", "Home", "Sports", "Books", "Health", "Furniture", "Food", "Property", "Gadgets"]
+CATEGORIES = ["Books", "Electronics", "Fashion", "Food", "Furniture", "Gadgets", "Health", "Home", "Property", "Sports", "Toys"]
 
 class ListingForm(forms.Form):
     CATEGORY_CHOICES = [(category, category) for category in CATEGORIES]
