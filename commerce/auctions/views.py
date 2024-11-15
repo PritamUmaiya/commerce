@@ -21,7 +21,11 @@ class ListingForm(forms.Form):
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    # Active listing
+    listings = Listing.objects.filter(is_active=True)
+    return render(request, "auctions/index.html", {
+        "listings": listings,
+    })
 
 @login_required
 def create_listing(request):
