@@ -8,8 +8,8 @@ class User(AbstractUser):
 class Listing(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
-    starting_bid = models.IntegerField()
-    current_price = models.IntegerField()
+    starting_bid = models.FloatField()
+    current_price = models.FloatField()
     image_url = models.CharField(max_length=200, null=True, blank=True)
     category = models.CharField(max_length=200, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")

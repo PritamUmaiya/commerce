@@ -6,7 +6,7 @@
     </div>
 
     {% for listing in listings %}
-        <div class="card mb-3">
+        <div class="card mb-3" onclick="window.location.href='{% url 'listings' listing.id %}';">
             <div class="row g-0">
                 <div class="col-md-4 text-center">
                     {% if listing.image_url %}

@@ -15,7 +15,7 @@ class ListingForm(forms.Form):
 
     title = forms.CharField(max_length=200, required=True, label="", widget=forms.TextInput(attrs={"class": "form-control mb-3", "placeholder": "Enter your title"}))
     description = forms.CharField(max_length=200, required=True, label="", widget=forms.Textarea(attrs={"class": "form-control mb-3", "placeholder": "A short description", "rows" : "3"}))
-    starting_bid = forms.IntegerField(min_value=0, required=True, label="", widget=forms.NumberInput(attrs={"class": "form-control mb-3", "placeholder": "Starting bid"}))
+    starting_bid = forms.FloatField(min_value=0, required=True, label="", widget=forms.NumberInput(attrs={"class": "form-control mb-3", "placeholder": "Starting bid"}))
     image_url = forms.CharField(max_length=200, required=False, label="", widget=forms.TextInput(attrs={"class": "form-control mb-3", "placeholder": "Enter image url (Optional)"}))
     category = forms.ChoiceField(choices=CATEGORY_CHOICES, required=True, label="", widget=forms.Select(attrs={"class": "form-control mb-3"}))
 
@@ -63,6 +63,13 @@ def create_listing(request):
     return render(request, "auctions/create.html", {
         "categories": CATEGORIES,
         "form": ListingForm,
+    })
+
+def listings(request, id):
+    listing = Listing.objects.get(pk=id)
+
+    return render(request, "auctions/listings.html", {
+        "listing": listing,
     })
 
 

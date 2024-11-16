@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="mb-4">
+        <h2>Listing: {{ listing.title }}</h2>
+    </div>
+
+    {% if message %}
+        <p class="text-center text-danger mb-3">{{ message }}</p>
+    {% endif %}
+
+    <div class="d-block" style="max-width:500px;">
+        
+    </div>
+
+{% endblock %}
