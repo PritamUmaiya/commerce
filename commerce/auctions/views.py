@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from .models import User, Listing, Bid, Comment, Watchlist
@@ -23,6 +23,7 @@ class ListingForm(forms.Form):
 def index(request):
     # Active listing
     listings = Listing.objects.filter(is_active=True)
+
     return render(request, "auctions/index.html", {
         "listings": listings,
     })
@@ -67,10 +68,33 @@ def create_listing(request):
 
 def listings(request, id):
     listing = Listing.objects.get(pk=id)
-
+    # Check if listing is in w
+    watchlisted = Watchlist.objects.filter(user=request.user, listing=listing)
     return render(request, "auctions/listings.html", {
         "listing": listing,
+        "watchlisted": watchlisted,
     })
+
+@login_required
+def watchlist(request):
+    return render(request, "auctions/watchlist.html", {
+        "watchlists": Watchlist.objects.filter(user=request.user),
+    })
+
+@login_required
+def to_watchlist(request, id):
+    # Check if id already exists
+    user = request.user
+    listing = Listing.objects.get(pk=id)
+    watchlist = Watchlist.objects.filter(user=user, listing=listing)
+
+    if watchlist.exists():
+        watchlist.delete()
+    else:
+        watchlist = Watchlist(user=user, listing=listing)
+        watchlist.save()
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def login_view(request):
