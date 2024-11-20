@@ -29,24 +29,31 @@
                 {% endif %}
                 <div class="card-body">
                     <p class="card-text">{{ listing.description }}</p>
-                    <h4>Price: ${{ listing.current_price }}</h4>
+                    <h5>Price: ${{ listing.current_price }}</h5>
                     <p>
                         {% if listing.is_active %}
                             <span class="badge text-bg-success">Active</span>
                         {% else %}
-                            <span class="badge text-bg-warning">Inactive</span>
+                            <span class="badge text-bg-warning">Deactivated</span>
+                        {% endif %}
+                        
+                        {% if listing.user == request.user %}
+                            <span class="badge text-bg-danger">Deactivate</span>
                         {% endif %}
                     </p>
+                
                     <form action="">
                         <div class="input-group mb-3">
                             <input type="number" class="form-control" placeholder="Bid" id="bid" name="bid" required />
                             <button class="btn btn-primary" type="submit">Place bid</button>
                         </div>
                     </form>
+
+                    <p class="text-body-secondary">{{ bids_count }} bid(s) so far. {% if last_bidder == request.user %}Your bid is current bid.{% endif %}</p>
                     
                     <h5>Listing Details</h5>
                     <ul>
-                        <li><strong>Listed by:</strong> {{ listing.user }}</li>
+                        <li><strong>Listed by:</strong> {{ listing.user }} {% if listing.user == request.user %}<strong class="text-body-secondary">(You)</strong>{% endif %}</li>
                         <li><strong>Category:</strong> {% if listing.category %}{{ listing.category }}{% else %}No category{% endif %}</li>
                         <li><strong>Created at:</strong> {{ listing.created_at }}</li>
                     </ul>
@@ -61,8 +68,10 @@
                     <h3>Comments</h3>
                 </div>
                 <div class="card-header">
-                    <form action="">
+                    <form action="{% url 'add_comment' %}" method="post">
+                        {% csrf_token %}
                         <div class="input-group mb-3">
+                            <input type="hidden" name="listing" value="{{ listing.id }}" />
                             <input type="text" class="form-control" placeholder="Add a comment.." id="comment" name="comment" required />
                             <button class="btn btn-primary" type="submit">Add comment</button>
                         </div>
@@ -72,7 +81,17 @@
                     {% for comment in comments %}
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p class="card-text"><strong class="text-primary">{{ comment.user }}:</strong> {{ comment.comment }}</p>
+                                    <p class="card-text">
+                                        <strong class="text-primary">{{ comment.user }}:</strong> 
+                                        <span>{{ comment.comment }}</span>
+                                        {% if comment.user == request.user %}
+                                            <form action="{% url 'delete_comment' %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="comment_id" value="{{ comment.id }}" />
+                                                <button class="badge text-bg-danger" type="submit">Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
                         {% empty %}

@@ -66,13 +66,19 @@ def create_listing(request):
         "form": ListingForm,
     })
 
+@login_required
 def listings(request, id):
     listing = Listing.objects.get(pk=id)
-    # Check if listing is in w
     watchlisted = Watchlist.objects.filter(user=request.user, listing=listing)
+    bids = Bid.objects.filter(listing=listing)
+    comments = Comment.objects.filter(listing=listing)
+
     return render(request, "auctions/listings.html", {
         "listing": listing,
         "watchlisted": watchlisted,
+        "bids_count": bids.count,
+        "last_bider": bids.last().user if bids.exists() else None,
+        "comments": comments,
     })
 
 @login_required
@@ -95,6 +101,27 @@ def to_watchlist(request, id):
         watchlist.save()
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def add_comment(request):
+    if request.method == "POST":
+        user = request.user
+        listing = Listing.objects.get(pk=request.POST["listing"])
+        comment = request.POST["comment"]
+
+        comment = Comment(user=user, listing=listing, comment=comment)
+        comment.save()
+
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def delete_comment(request):
+    if request.method == "POST":
+        user = request.user
+        comment = Comment.objects.get(pk=request.POST["comment_id"], user=user)
+        comment.delete()
+
+        return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def login_view(request):
