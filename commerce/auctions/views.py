@@ -18,7 +18,7 @@ class ListingForm(forms.Form):
     description = forms.CharField(max_length=200, required=True, label="", widget=forms.Textarea(attrs={"class": "form-control mb-3", "placeholder": "A short description", "rows" : "3"}))
     starting_bid = forms.FloatField(min_value=0, required=True, label="", widget=forms.NumberInput(attrs={"class": "form-control mb-3", "placeholder": "Starting bid"}))
     image_url = forms.CharField(max_length=200, required=False, label="", widget=forms.TextInput(attrs={"class": "form-control mb-3", "placeholder": "Enter image url (Optional)"}))
-    category = forms.ChoiceField(choices=CATEGORY_CHOICES, required=True, label="", widget=forms.Select(attrs={"class": "form-control mb-3"}))
+    category = forms.ChoiceField(choices=CATEGORY_CHOICES, required=False, label="", widget=forms.Select(attrs={"class": "form-control mb-3"}))
 
 
 def index(request):
@@ -70,6 +70,15 @@ def create_listing(request):
 
 
 @login_required
+def close_listing(request, id):
+    listing = Listing.objects.get(pk=id, user=request.user)
+    listing.is_active = False
+    listing.save()
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
 def listings(request, id):
     listing = Listing.objects.get(pk=id)
     watchlisted = Watchlist.objects.filter(user=request.user, listing=listing)
@@ -112,7 +121,7 @@ def to_watchlist(request, id):
 def place_bid(request, id):
     if request.method == "POST":
         user = request.user
-        listing = Listing.objects.get(pk=id)
+        listing = Listing.objects.get(pk=id, active=True)
         bid_amount = float(request.POST["bid"])
 
         # Check if no bids have been placed yet
@@ -138,9 +147,6 @@ def place_bid(request, id):
 
     # If the method is not POST, redirect to the listing page
     return redirect("listing", id=id)
-
-
-
 
 
 @login_required

@@ -11,6 +11,12 @@
         {% endfor %}
     {% endif %}
 
+    {% if not listing.is_active and last_bider == request.user %}
+        <div class="alert alert-info" role="alert">
+            Congratulations! You won the bid of ${{ listing.current_price }}
+        </div>
+    {% endif %}
+
     <div class="row g-0">
 
         <!--Listing Details-->
@@ -39,18 +45,20 @@
                             <span class="badge text-bg-warning">Deactivated</span>
                         {% endif %}
                         
-                        {% if listing.user == request.user %}
-                            <span class="badge text-bg-danger">Deactivate</span>
+                        {% if listing.user == request.user and listing.is_active %}
+                            <a class="badge text-bg-danger" href="{% url 'close_listing' listing.id %}">Deactivate</a>
                         {% endif %}
                     </p>
-                
-                    <form action="{% url 'place_bid' listing.id %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group mb-3">
-                            <input type="number" class="form-control" step="any" placeholder="Bid" id="bid" name="bid" required />
-                            <button class="btn btn-primary" type="submit">Place bid</button>
-                        </div>
-                    </form>
+                    
+                    {% if listing.active %}
+                        <form action="{% url 'place_bid' listing.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control" step="any" placeholder="Bid" id="bid" name="bid" required />
+                                <button class="btn btn-primary" type="submit">Place bid</button>
+                            </div>
+                        </form>
+                    {% endif %}
 
                     <p class="text-body-secondary">{{ bids_count }} bid(s) so far. {% if last_bider == request.user %}Your bid is current bid.{% endif %}</p>
                     
