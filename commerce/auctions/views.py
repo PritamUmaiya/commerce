@@ -131,7 +131,7 @@ def to_watchlist(request, id):
 def place_bid(request, id):
     if request.method == "POST":
         user = request.user
-        listing = Listing.objects.get(pk=id, active=True)
+        listing = Listing.objects.get(pk=id, is_active=True)
         bid_amount = float(request.POST["bid"])
 
         # Check if no bids have been placed yet

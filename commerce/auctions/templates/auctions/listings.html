@@ -50,7 +50,7 @@
                         {% endif %}
                     </p>
                     
-                    {% if listing.active %}
+                    {% if listing.is_active %}
                         <form action="{% url 'place_bid' listing.id %}" method="post">
                             {% csrf_token %}
                             <div class="input-group mb-3">
