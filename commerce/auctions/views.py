@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -27,6 +28,7 @@ def index(request):
     return render(request, "auctions/index.html", {
         "listings": listings,
     })
+
 
 @login_required
 def create_listing(request):
@@ -66,6 +68,7 @@ def create_listing(request):
         "form": ListingForm,
     })
 
+
 @login_required
 def listings(request, id):
     listing = Listing.objects.get(pk=id)
@@ -81,11 +84,13 @@ def listings(request, id):
         "comments": comments,
     })
 
+
 @login_required
 def watchlist(request):
     return render(request, "auctions/watchlist.html", {
         "watchlists": Watchlist.objects.filter(user=request.user),
     })
+
 
 @login_required
 def to_watchlist(request, id):
@@ -102,6 +107,42 @@ def to_watchlist(request, id):
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
+
+@login_required
+def place_bid(request, id):
+    if request.method == "POST":
+        user = request.user
+        listing = Listing.objects.get(pk=id)
+        bid_amount = float(request.POST["bid"])
+
+        # Check if no bids have been placed yet
+        if not Bid.objects.filter(listing=listing).exists():
+            if bid_amount >= listing.starting_bid:
+                bid = Bid(user=user, listing=listing, amount=bid_amount)
+                bid.save()
+                listing.current_price = bid_amount
+                listing.save()
+            else:
+                messages.error(request, "Bid amount must be at least the starting bid!")
+               
+        elif bid_amount > listing.current_price:
+            bid = Bid(user=user, listing=listing, amount=bid_amount)
+            bid.save()
+            listing.current_price = bid_amount
+            listing.save()
+        else:
+            messages.error(request, "Bid amount must be greater than the current price!")
+
+        # Redirect back to the same page
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    # If the method is not POST, redirect to the listing page
+    return redirect("listing", id=id)
+
+
+
+
+
 @login_required
 def add_comment(request):
     if request.method == "POST":
@@ -113,6 +154,7 @@ def add_comment(request):
         comment.save()
 
         return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
 @login_required
 def delete_comment(request):

@@ -5,8 +5,10 @@
         <h2>Listing</h2>
     </div>
 
-    {% if message %}
-        <p class="text-center text-danger mb-3">{{ message }}</p>
+    {% if messages %}
+        {% for message in messages %}
+            <p class="text-danger mb-3">{{ message }}</p>
+        {% endfor %}
     {% endif %}
 
     <div class="row g-0">
@@ -42,14 +44,15 @@
                         {% endif %}
                     </p>
                 
-                    <form action="">
+                    <form action="{% url 'place_bid' listing.id %}" method="post">
+                        {% csrf_token %}
                         <div class="input-group mb-3">
-                            <input type="number" class="form-control" placeholder="Bid" id="bid" name="bid" required />
+                            <input type="number" class="form-control" step="any" placeholder="Bid" id="bid" name="bid" required />
                             <button class="btn btn-primary" type="submit">Place bid</button>
                         </div>
                     </form>
 
-                    <p class="text-body-secondary">{{ bids_count }} bid(s) so far. {% if last_bidder == request.user %}Your bid is current bid.{% endif %}</p>
+                    <p class="text-body-secondary">{{ bids_count }} bid(s) so far. {% if last_bider == request.user %}Your bid is current bid.{% endif %}</p>
                     
                     <h5>Listing Details</h5>
                     <ul>

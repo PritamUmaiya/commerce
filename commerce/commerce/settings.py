@@ -121,5 +121,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+LOGIN_URL = '/login'
 
 CSRF_TRUSTED_ORIGINS = ["https://8000-idx-commerce-1731384246534.cluster-bec2e4635ng44w7ed22sa22hes.cloudworkstations.dev"]
