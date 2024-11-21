@@ -22,11 +22,21 @@ class ListingForm(forms.Form):
 
 
 def index(request):
-    # Active listing
-    listings = Listing.objects.filter(is_active=True)
+    category_name = request.GET.get('category')
+    if category_name:
+        listings = Listing.objects.filter(category=category_name, is_active=True)
+    else:
+        listings = Listing.objects.filter(is_active=True)
 
     return render(request, "auctions/index.html", {
         "listings": listings,
+        "category_name": category_name,
+    })
+
+
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": CATEGORIES,
     })
 
 

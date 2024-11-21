@@ -5,6 +5,10 @@
         <h2>Active Listings</h2>
     </div>
 
+    {% if category_name %}
+        <p>Category: {{ category_name }}</p>
+    {% endif %}
+
     {% for listing in listings %}
         <div class="card mb-3" onclick="window.location.href='/listings/{{ listing.id }}';">
             <div class="row g-0">
